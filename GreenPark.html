@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
 
     <!-- 3. Load Recharts (Specific compatible version) -->
-    <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
 
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -319,20 +319,20 @@
             const data = [];
             const companies = ['TechSol Inc.', 'GreenWave Corp.', 'EcoSystems Ltd.', 'FutureEnergy', 'SmartData Solutions'];
 
-            for(let i=0; i<count; i++) {
+            for (let i = 0; i < count; i++) {
                 const id = `REC-${2024000 + i}`;
                 const company = companies[Math.floor(Math.random() * companies.length)];
 
                 if (type === 'energy') {
-                    data.push({ ID: id, 区域: `Zone-${String.fromCharCode(65 + i%5)}`, 部门: company, 能耗: (Math.random() * 500).toFixed(1) + ' kWh', 状态: '正常' });
+                    data.push({ ID: id, 区域: `Zone-${String.fromCharCode(65 + i % 5)}`, 部门: company, 能耗: (Math.random() * 500).toFixed(1) + ' kWh', 状态: '正常' });
                 } else if (type === 'tax') {
                     data.push({ ID: id, 企业: company, 税种: '绿色环保税', 金额: '¥' + (Math.random() * 10000).toFixed(2), 缴纳状态: '已缴纳' });
                 } else if (type === 'eco') {
-                    data.push({ ID: id, 监测点: `Station-${i+1}`, 因子: 'PM2.5', 数值: (Math.random() * 50).toFixed(0), 等级: '优' });
+                    data.push({ ID: id, 监测点: `Station-${i + 1}`, 因子: 'PM2.5', 数值: (Math.random() * 50).toFixed(0), 等级: '优' });
                 } else if (type === 'waste') {
                     data.push({ ID: id, 来源: company, 种类: '可回收物', 重量: (Math.random() * 100).toFixed(1) + ' kg', 处理: '已回收' });
                 } else if (type === 'building') {
-                    data.push({ ID: id, 楼宇: `Building-${i+1}`, 楼层: `${(i%10)+1}F`, 租户: company, 在场人数: Math.floor(Math.random() * 50) + 10 });
+                    data.push({ ID: id, 楼宇: `Building-${i + 1}`, 楼层: `${(i % 10) + 1}F`, 租户: company, 在场人数: Math.floor(Math.random() * 50) + 10 });
                 }
             }
             return data;
@@ -393,7 +393,7 @@
 
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm animate-fade-in-right p-4">
-                     <div className="glass-panel w-[800px] max-w-full max-h-[80vh] flex flex-col rounded-xl overflow-hidden tech-border p-6 shadow-2xl">
+                    <div className="glass-panel w-[800px] max-w-full max-h-[80vh] flex flex-col rounded-xl overflow-hidden tech-border p-6 shadow-2xl">
                         <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                             <h3 className="text-2xl font-bold text-white font-rajdhani flex items-center gap-2">
                                 <i data-lucide="table" className="text-emerald-400"></i>
@@ -423,7 +423,7 @@
                             <span>Total Rows: {data.length}</span>
                             <span>Generated: {new Date().toLocaleTimeString()}</span>
                         </div>
-                     </div>
+                    </div>
                 </div>
             );
         };
@@ -821,10 +821,21 @@
                             w: 5 + Math.random() * 7,
                             d: 5 + Math.random() * 7,
                             floors: 3 + Math.floor(Math.random() * 8),
-                            id: `B-${i + 1}`
+                            id: `B - ${ i + 1}`
                         });
                     }
                     return buildings;
+                };
+
+                const checkCollision = (x, z, buildings) => {
+                    for (let b of buildings) {
+                        const margin = 3; 
+                        if (x > b.x - b.w / 2 - margin && x < b.x + b.w / 2 + margin &&
+                            z > b.z - b.d / 2 - margin && z < b.z + b.d / 2 + margin) {
+                            return true;
+                        }
+                    }
+                    return false;
                 };
 
                 const cityLayout = generateCity();
@@ -838,8 +849,8 @@
                         const mat = glassMaterial.clone();
                         // Varying tint based on park
                         let tintColor = 0x64748b;
-                        if(activePark === 'park-b') tintColor = 0x10b981; // Greenish
-                        if(activePark === 'park-c') tintColor = 0x8b5cf6; // Purplish
+                        if (activePark === 'park-b') tintColor = 0x10b981; // Greenish
+                        if (activePark === 'park-c') tintColor = 0x8b5cf6; // Purplish
 
                         const tint = new THREE.Color(tintColor).lerp(new THREE.Color(0xffffff), Math.random() * 0.2);
                         mat.color = tint;
@@ -887,7 +898,7 @@
                 // 9. People & Vehicles
                 const people = [];
                 const personMaterial = new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x0ea5e9, emissiveIntensity: 0.3 });
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < 30; i++) {
                     const personGroup = new THREE.Group();
                     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.2, 8), personMaterial.clone());
                     body.position.y = 0.9;
@@ -895,31 +906,60 @@
                     const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 8, 8), personMaterial.clone());
                     head.position.y = 1.7;
                     personGroup.add(head);
-                    const startAngle = Math.random() * Math.PI * 2;
-                    const r = 15 + Math.random() * 50;
-                    personGroup.position.set(Math.cos(startAngle) * r, 0, Math.sin(startAngle) * r);
-                    personGroup.userData = { speed: 0.02 + Math.random() * 0.03, angle: startAngle, radius: r, direction: Math.random() > 0.5 ? 1 : -1 };
+                    
+                    let px, pz;
+                    let attempts = 0;
+                    do {
+                        px = (Math.random() - 0.5) * 160;
+                        pz = (Math.random() - 0.5) * 160;
+                        attempts++;
+                    } while (checkCollision(px, pz, cityLayout) && attempts < 10);
+
+                    personGroup.position.set(px, 0, pz);
+                    
+                    const speed = 0.03 + Math.random() * 0.03;
+                    const axis = Math.random() > 0.5 ? 'x' : 'z';
+                    const dir = Math.random() > 0.5 ? 1 : -1;
+                    
+                    personGroup.userData = { 
+                        velocity: new THREE.Vector3(axis === 'x' ? speed * dir : 0, 0, axis === 'z' ? speed * dir : 0),
+                        speed: speed
+                    };
                     scene.add(personGroup);
                     people.push(personGroup);
                 }
 
-                 const vehicles = [];
+                const vehicles = [];
                 const carColors = [0x3b82f6, 0x10b981, 0xf59e0b, 0xef4444, 0x8b5cf6];
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < 15; i++) {
                     const carGroup = new THREE.Group();
                     const carColor = carColors[Math.floor(Math.random() * carColors.length)];
                     const carMaterial = new THREE.MeshPhongMaterial({ color: carColor, emissive: carColor, emissiveIntensity: 0.2 });
                     const carBody = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 3.5), carMaterial);
                     carBody.position.y = 0.6;
                     carGroup.add(carBody);
-                    const pathRadius = 35 + Math.random() * 40;
-                    const startAngle = Math.random() * Math.PI * 2;
-                    carGroup.position.set(Math.cos(startAngle) * pathRadius, 0.1, Math.sin(startAngle) * pathRadius);
-                    carGroup.userData = { speed: 0.003 + Math.random() * 0.004, angle: startAngle, radius: pathRadius, direction: Math.random() > 0.5 ? 1 : -1 };
+                    
+                    let vx, vz;
+                    let attempts = 0;
+                    do {
+                        vx = (Math.random() - 0.5) * 180;
+                        vz = (Math.random() - 0.5) * 180;
+                        attempts++;
+                    } while (checkCollision(vx, vz, cityLayout) && attempts < 10);
+
+                    carGroup.position.set(vx, 0.1, vz);
+
+                    const speed = 0.15 + Math.random() * 0.1;
+                    const axis = Math.random() > 0.5 ? 'x' : 'z';
+                    const dir = Math.random() > 0.5 ? 1 : -1;
+
+                    carGroup.userData = { 
+                        velocity: new THREE.Vector3(axis === 'x' ? speed * dir : 0, 0, axis === 'z' ? speed * dir : 0),
+                        speed: speed
+                    };
                     scene.add(carGroup);
                     vehicles.push(carGroup);
                 }
-
 
                 // Animation Loop
                 let animationId;
@@ -941,18 +981,45 @@
                     particlesMesh.rotation.y = -time * 0.2;
 
                     people.forEach(p => {
-                         const d = p.userData;
-                         d.angle += d.speed * d.direction;
-                         p.position.x = Math.cos(d.angle) * d.radius;
-                         p.position.z = Math.sin(d.angle) * d.radius;
-                         p.rotation.y = -d.angle + Math.PI / 2 * d.direction;
+                         const v = p.userData.velocity;
+                         p.position.add(v);
+                         p.lookAt(p.position.x + v.x, p.position.y, p.position.z + v.z);
+
+                         // Turn logic
+                         let turn = false;
+                         if (Math.random() < 0.01) turn = true; 
+                         if (p.position.length() > 90) turn = true; 
+                         if (checkCollision(p.position.x + v.x * 20, p.position.z + v.z * 20, cityLayout)) turn = true;
+
+                         if (turn) {
+                             if (Math.abs(v.x) > 0.001) {
+                                 v.z = Math.random() > 0.5 ? p.userData.speed : -p.userData.speed;
+                                 v.x = 0;
+                             } else {
+                                 v.x = Math.random() > 0.5 ? p.userData.speed : -p.userData.speed;
+                                 v.z = 0;
+                             }
+                         }
                     });
                      vehicles.forEach(v => {
-                        const d = v.userData;
-                        d.angle += d.speed * d.direction;
-                        v.position.x = Math.cos(d.angle) * d.radius;
-                        v.position.z = Math.sin(d.angle) * d.radius;
-                        v.rotation.y = -d.angle + Math.PI / 2 * d.direction;
+                        const vel = v.userData.velocity;
+                        v.position.add(vel);
+                        v.lookAt(v.position.x + vel.x, v.position.y, v.position.z + vel.z);
+
+                        let turn = false;
+                        if (Math.random() < 0.005) turn = true; 
+                        if (v.position.length() > 100) turn = true; 
+                        if (checkCollision(v.position.x + vel.x * 30, v.position.z + vel.z * 30, cityLayout)) turn = true;
+
+                        if (turn) {
+                             if (Math.abs(vel.x) > 0.001) {
+                                 vel.z = Math.random() > 0.5 ? v.userData.speed : -v.userData.speed;
+                                 vel.x = 0;
+                             } else {
+                                 vel.x = Math.random() > 0.5 ? v.userData.speed : -v.userData.speed;
+                                 vel.z = 0;
+                             }
+                        }
                     });
 
                     renderer.render(scene, camera);
@@ -1000,96 +1067,96 @@
                 };
             }, [activePark]); // Re-run when activePark changes
 
-            // Refs for callbacks to avoid effect dependencies
-            const handleSelectionRef = useRef(() => {});
-            const handleDeselectRef = useRef(() => {});
-            const modeRef = useRef(mode);
+        // Refs for callbacks to avoid effect dependencies
+        const handleSelectionRef = useRef(() => { });
+        const handleDeselectRef = useRef(() => { });
+        const modeRef = useRef(mode);
 
-            useEffect(() => {
-                modeRef.current = mode;
-            }, [mode]);
+        useEffect(() => {
+            modeRef.current = mode;
+        }, [mode]);
 
-            handleSelectionRef.current = (mesh) => {
-                const isBuildingMode = (modeRef.current === 'building');
-                const targetId = mesh.userData.buildingId;
+        handleSelectionRef.current = (mesh) => {
+            const isBuildingMode = (modeRef.current === 'building');
+            const targetId = mesh.userData.buildingId;
 
-                floorsRef.current.forEach(f => f.material = f.userData.originalMaterial);
+            floorsRef.current.forEach(f => f.material = f.userData.originalMaterial);
 
-                if (isBuildingMode) {
-                    floorsRef.current.forEach(f => {
-                        if (f.userData.buildingId === targetId) f.material = f.userData.highlightBuildingMat;
-                    });
-                } else {
-                    mesh.material = mesh.userData.highlightFloorMat;
+            if (isBuildingMode) {
+                floorsRef.current.forEach(f => {
+                    if (f.userData.buildingId === targetId) f.material = f.userData.highlightBuildingMat;
+                });
+            } else {
+                mesh.material = mesh.userData.highlightFloorMat;
+            }
+
+            // Camera Focus Logic
+            const meshPos = mesh.position.clone();
+            if (isBuildingMode) {
+                const buildingFloors = floorsRef.current.filter(f => f.userData.buildingId === targetId);
+                if (buildingFloors.length > 0) {
+                    let sumY = 0;
+                    buildingFloors.forEach(f => sumY += f.position.y);
+                    meshPos.y = sumY / buildingFloors.length;
                 }
+            }
+            const distance = isBuildingMode ? 45 : 30;
+            const height = isBuildingMode ? 25 : 18;
+            const cameraDir = new THREE.Vector3().subVectors(cameraRef.current.position, meshPos).normalize();
 
-                // Camera Focus Logic
-                const meshPos = mesh.position.clone();
-                if (isBuildingMode) {
-                    const buildingFloors = floorsRef.current.filter(f => f.userData.buildingId === targetId);
-                    if (buildingFloors.length > 0) {
-                        let sumY = 0;
-                        buildingFloors.forEach(f => sumY += f.position.y);
-                        meshPos.y = sumY / buildingFloors.length;
-                    }
-                }
-                const distance = isBuildingMode ? 45 : 30;
-                const height = isBuildingMode ? 25 : 18;
-                const cameraDir = new THREE.Vector3().subVectors(cameraRef.current.position, meshPos).normalize();
-
-                targetCameraPos.current.set(
-                    meshPos.x + cameraDir.x * distance,
-                    meshPos.y + height,
-                    meshPos.z + cameraDir.z * distance
-                );
-                targetLookAt.current.copy(meshPos);
-                isSelectedRef.current = true;
-
-                const data = generateStats(targetId, mesh.userData.floorIndex, isBuildingMode);
-                setSelectedData(data);
-            };
-
-            handleDeselectRef.current = () => {
-                floorsRef.current.forEach(f => f.material = f.userData.originalMaterial);
-                isSelectedRef.current = false;
-                setSelectedData(null);
-            };
-
-            return (
-                <div className="relative w-full h-screen overflow-hidden">
-                    <Header />
-                    <Sidebar
-                        mode={mode}
-                        setMode={setMode}
-                        activePark={activePark}
-                        setActivePark={setActivePark}
-                        onOpenDetail={handleOpenDetail}
-                    />
-                    <DetailPanel data={selectedData} onClose={() => handleDeselectRef.current()} />
-
-                    {modalConfig && (
-                        <TableModal
-                            title={modalConfig.title}
-                            data={modalConfig.data}
-                            onClose={handleCloseModal}
-                        />
-                    )}
-
-                    <div ref={mountRef} className="absolute top-0 left-0 w-full h-full z-0 cursor-crosshair bg-slate-950" />
-
-                    {/* Floating Toast */}
-                    {!selectedData && !modalConfig && (
-                        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-none">
-                            <div className="bg-slate-900/80 text-emerald-100 px-5 py-2 rounded-full border border-emerald-500/30 backdrop-blur-md flex items-center gap-3 shadow-lg shadow-emerald-500/10">
-                                <i data-lucide="scan-line" size={16} className="text-emerald-400"></i>
-                                <span className="text-xs font-medium tracking-wide">
-                                    {mode === 'floor' ? '单击楼层查看能耗详情' : '单击建筑查看整栋碳排数据'}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </div>
+            targetCameraPos.current.set(
+                meshPos.x + cameraDir.x * distance,
+                meshPos.y + height,
+                meshPos.z + cameraDir.z * distance
             );
+            targetLookAt.current.copy(meshPos);
+            isSelectedRef.current = true;
+
+            const data = generateStats(targetId, mesh.userData.floorIndex, isBuildingMode);
+            setSelectedData(data);
+        };
+
+        handleDeselectRef.current = () => {
+            floorsRef.current.forEach(f => f.material = f.userData.originalMaterial);
+            isSelectedRef.current = false;
+            setSelectedData(null);
+        };
+
+        return (
+            <div className="relative w-full h-screen overflow-hidden">
+                <Header />
+                <Sidebar
+                    mode={mode}
+                    setMode={setMode}
+                    activePark={activePark}
+                    setActivePark={setActivePark}
+                    onOpenDetail={handleOpenDetail}
+                />
+                <DetailPanel data={selectedData} onClose={() => handleDeselectRef.current()} />
+
+                {modalConfig && (
+                    <TableModal
+                        title={modalConfig.title}
+                        data={modalConfig.data}
+                        onClose={handleCloseModal}
+                    />
+                )}
+
+                <div ref={mountRef} className="absolute top-0 left-0 w-full h-full z-0 cursor-crosshair bg-slate-950" />
+
+                {/* Floating Toast */}
+                {!selectedData && !modalConfig && (
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-none">
+                        <div className="bg-slate-900/80 text-emerald-100 px-5 py-2 rounded-full border border-emerald-500/30 backdrop-blur-md flex items-center gap-3 shadow-lg shadow-emerald-500/10">
+                            <i data-lucide="scan-line" size={16} className="text-emerald-400"></i>
+                            <span className="text-xs font-medium tracking-wide">
+                                {mode === 'floor' ? '单击楼层查看能耗详情' : '单击建筑查看整栋碳排数据'}
+                            </span>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -1098,3 +1165,4 @@
 </body>
 
 </html>
+```
